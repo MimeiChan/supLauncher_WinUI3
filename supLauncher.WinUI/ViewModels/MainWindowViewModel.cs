@@ -30,6 +30,11 @@ namespace supLauncher.WinUI.ViewModels
         private MenuPage _currentMenu;
 
         /// <summary>
+        /// 現在のメニューページを取得
+        /// </summary>
+        public MenuPage CurrentMenu => _currentMenu;
+
+        /// <summary>
         /// コンストラクタ
         /// </summary>
         /// <param name="menuService">メニューサービス</param>
@@ -226,8 +231,8 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void InitializeCommands()
         {
-            NewCommand = new RelayCommand(ExecuteNewCommand);
-            OpenCommand = new RelayCommand(ExecuteOpenCommand);
+            NewCommand = new RelayCommand<string>(ExecuteNewCommand);
+            OpenCommand = new RelayCommand<string>(ExecuteOpenCommand);
             SettingsCommand = new RelayCommand(ExecuteSettingsCommand);
             ExitCommand = new RelayCommand(ExecuteExitCommand);
 
@@ -383,6 +388,71 @@ namespace supLauncher.WinUI.ViewModels
         }
 
         /// <summary>
+        /// メニュー項目を取得する
+        /// </summary>
+        /// <param name="index">インデックス</param>
+        /// <returns>メニュー項目</returns>
+        public MenuItem GetMenuItem(int index)
+        {
+            if (index >= 0 && index < _currentMenu.MenuItems.Count)
+            {
+                return _currentMenu.MenuItems[index];
+            }
+            return new MenuItem();
+        }
+
+        /// <summary>
+        /// メニュー項目を更新する
+        /// </summary>
+        /// <param name="index">インデックス</param>
+        /// <param name="menuItem">更新後のメニュー項目</param>
+        /// <param name="isEscapeButton">ESCキーとして設定するかどうか</param>
+        public void UpdateMenuItem(int index, MenuItem menuItem, bool isEscapeButton)
+        {
+            if (index >= 0 && index < _currentMenu.MenuItems.Count)
+            {
+                // メニュー項目を更新
+                _currentMenu.MenuItems[index] = menuItem;
+                
+                // ESCキー設定の更新
+                if (isEscapeButton)
+                {
+                    _currentMenu.CancelButtonIndex = index;
+                }
+                else if (_currentMenu.CancelButtonIndex == index)
+                {
+                    _currentMenu.CancelButtonIndex = -1;
+                }
+                
+                // UIを更新
+                UpdateUI();
+            }
+        }
+
+        /// <summary>
+        /// メニュー設定を更新する
+        /// </summary>
+        /// <param name="menuPage">更新されたメニューページ</param>
+        public void UpdateMenuSettings(MenuPage menuPage)
+        {
+            // 現在のメニューページを更新
+            _currentMenu = menuPage;
+            
+            // UIを更新
+            UpdateUI();
+        }
+
+        /// <summary>
+        /// 指定されたボタンがESCキーとして設定されているかどうかを確認する
+        /// </summary>
+        /// <param name="index">ボタンのインデックス</param>
+        /// <returns>ESCキーとして設定されている場合はtrue</returns>
+        public bool IsEscapeButton(int index)
+        {
+            return _currentMenu.CancelButtonIndex == index;
+        }
+
+        /// <summary>
         /// メニューボタンをクリックした
         /// </summary>
         /// <param name="index">クリックされたボタンのインデックス</param>
@@ -401,7 +471,9 @@ namespace supLauncher.WinUI.ViewModels
             else
             {
                 // 編集モード
-                OpenButtonEditDialog(index);
+                // 編集ダイアログはMainWindowで表示
+                SelectedButtonIndex = index;
+                StatusText = menuItem.Comment;
             }
         }
 
@@ -420,6 +492,7 @@ namespace supLauncher.WinUI.ViewModels
                     if (result.Result != ApplicationLaunchService.ExecuteResult.Success)
                     {
                         // エラー処理
+                        // ToDo: エラーメッセージを表示
                     }
                     break;
 
@@ -469,17 +542,12 @@ namespace supLauncher.WinUI.ViewModels
 
                 case MenuItem.ItemAfter.MinimizedHiMenu:
                     // 最小化
+                    if (App.Current is App app && app.MainWindow != null)
+                    {
+                        // ToDo: ウィンドウを最小化
+                    }
                     break;
             }
-        }
-
-        /// <summary>
-        /// ボタン編集ダイアログを開く
-        /// </summary>
-        /// <param name="index">編集するボタンのインデックス</param>
-        private void OpenButtonEditDialog(int index)
-        {
-            // ToDo: ボタン編集ダイアログを表示
         }
 
         #endregion
@@ -489,17 +557,76 @@ namespace supLauncher.WinUI.ViewModels
         /// <summary>
         /// 新規作成コマンドを実行
         /// </summary>
-        private void ExecuteNewCommand()
+        private void ExecuteNewCommand(string filePath)
         {
-            // ToDo: 新規作成ダイアログを表示
+            // 現在の変更を保存するか確認
+            if (_currentMenu.IsChanged)
+            {
+                // ToDo: 保存確認ダイアログを表示
+                _menuService.SaveMenu(_currentMenu);
+            }
+
+            // 新しいメニューページを作成
+            _currentMenu = new MenuPage
+            {
+                FileName = filePath
+            };
+
+            // デフォルト設定を適用
+            _currentMenu.Title = "新しいメニュー";
+            _currentMenu.Rows = 10;
+            _currentMenu.Columns = 2;
+            _currentMenu.Width = 559;
+            _currentMenu.Height = 406;
+            _currentMenu.MenuVisible = true;
+            _currentMenu.StatusBarVisible = true;
+            _currentMenu.DisplayPosition = MenuPage.MenuDispPosition.ScreenCenter;
+            _currentMenu.FontName = "ＭＳ Ｐゴシック";
+            _currentMenu.FontSize = 12;
+            _currentMenu.FontBold = true;
+            _currentMenu.FontItalic = false;
+            _currentMenu.FontUnderline = false;
+            _currentMenu.BackColor = System.Drawing.SystemColors.ControlDark;
+            _currentMenu.ButtonColor = System.Drawing.SystemColors.Control;
+            _currentMenu.TextColor = System.Drawing.SystemColors.ControlText;
+            _currentMenu.HighlightTextColor = System.Drawing.SystemColors.Highlight;
+            _currentMenu.BackgroundImageFile = "";
+            _currentMenu.BackgroundImageTile = false;
+            _currentMenu.LockOn = false;
+            _currentMenu.LockPassword = "";
+            _currentMenu.CancelButtonIndex = -1;
+
+            // メニュー項目を初期化
+            _currentMenu.MenuItems.Clear();
+            for (int i = 0; i < _currentMenu.Rows * _currentMenu.Columns; i++)
+            {
+                _currentMenu.MenuItems.Add(new MenuItem());
+            }
+
+            // メニューファイルを保存
+            _menuService.SaveMenu(_currentMenu);
+
+            // UIを更新
+            UpdateUI();
         }
 
         /// <summary>
         /// 開くコマンドを実行
         /// </summary>
-        private void ExecuteOpenCommand()
+        private void ExecuteOpenCommand(string filePath)
         {
-            // ToDo: ファイルを開くダイアログを表示
+            // 現在の変更を保存するか確認
+            if (_currentMenu.IsChanged)
+            {
+                // ToDo: 保存確認ダイアログを表示
+                _menuService.SaveMenu(_currentMenu);
+            }
+
+            // メニューファイルを読み込む
+            _currentMenu = _menuService.LoadMenu(filePath);
+
+            // UIを更新
+            UpdateUI();
         }
 
         /// <summary>
@@ -507,7 +634,7 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecuteSettingsCommand()
         {
-            // ToDo: 環境設定ダイアログを表示
+            // 環境設定ダイアログはMainWindowで表示
         }
 
         /// <summary>
@@ -515,7 +642,15 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecuteExitCommand()
         {
-            // ToDo: アプリケーションを終了
+            // 現在の変更を保存するか確認
+            if (_currentMenu.IsChanged)
+            {
+                // ToDo: 保存確認ダイアログを表示
+                _menuService.SaveMenu(_currentMenu);
+            }
+
+            // アプリケーションを終了
+            Application.Current.Exit();
         }
 
         /// <summary>
@@ -523,7 +658,18 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecuteCutCommand()
         {
-            // ToDo: 切り取り処理
+            // 切り取り処理
+            if (SelectedButtonIndex >= 0 && SelectedButtonIndex < _currentMenu.MenuItems.Count)
+            {
+                // クリップボードに項目をコピー
+                // ToDo: クリップボード処理
+                
+                // 選択項目をクリア
+                _currentMenu.MenuItems[SelectedButtonIndex] = new MenuItem();
+                
+                // UIを更新
+                UpdateUI();
+            }
         }
 
         /// <summary>
@@ -531,7 +677,14 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecuteCopyCommand()
         {
-            // ToDo: コピー処理
+            // コピー処理
+            if (SelectedButtonIndex >= 0 && SelectedButtonIndex < _currentMenu.MenuItems.Count)
+            {
+                // クリップボードに項目をコピー
+                // ToDo: クリップボード処理
+                
+                CanPaste = true;
+            }
         }
 
         /// <summary>
@@ -539,7 +692,26 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecutePasteCommand()
         {
-            // ToDo: 貼り付け処理
+            // 貼り付け処理
+            if (SelectedButtonIndex >= 0 && SelectedButtonIndex < _currentMenu.MenuItems.Count && CanPaste)
+            {
+                // クリップボードから項目を貼り付け
+                // ToDo: クリップボード処理
+                
+                // 仮実装: テスト用のデータを貼り付け
+                _currentMenu.MenuItems[SelectedButtonIndex] = new MenuItem
+                {
+                    Title = "貼り付けたアイテム",
+                    Comment = "クリップボードから貼り付けられたアイテム",
+                    Command = "notepad.exe",
+                    Attribute = MenuItem.ItemAttribute.ExecApplication,
+                    After = MenuItem.ItemAfter.ContinueHiMenu,
+                    NoUse = false
+                };
+                
+                // UIを更新
+                UpdateUI();
+            }
         }
 
         /// <summary>
@@ -547,7 +719,21 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecuteDeleteCommand()
         {
-            // ToDo: 削除処理
+            // 削除処理
+            if (SelectedButtonIndex >= 0 && SelectedButtonIndex < _currentMenu.MenuItems.Count)
+            {
+                // 選択項目をクリア
+                _currentMenu.MenuItems[SelectedButtonIndex] = new MenuItem();
+                
+                // ESCキーの設定をクリア
+                if (_currentMenu.CancelButtonIndex == SelectedButtonIndex)
+                {
+                    _currentMenu.CancelButtonIndex = -1;
+                }
+                
+                // UIを更新
+                UpdateUI();
+            }
         }
 
         /// <summary>
@@ -555,7 +741,16 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecuteToggleHiddenCommand()
         {
-            // ToDo: 非表示トグル処理
+            // 非表示トグル処理
+            if (SelectedButtonIndex >= 0 && SelectedButtonIndex < _currentMenu.MenuItems.Count)
+            {
+                // 非表示状態を切り替え
+                _currentMenu.MenuItems[SelectedButtonIndex].NoUse = !_currentMenu.MenuItems[SelectedButtonIndex].NoUse;
+                IsCurrentItemHidden = _currentMenu.MenuItems[SelectedButtonIndex].NoUse;
+                
+                // UIを更新
+                UpdateUI();
+            }
         }
 
         /// <summary>
@@ -563,7 +758,24 @@ namespace supLauncher.WinUI.ViewModels
         /// </summary>
         private void ExecuteToggleEscapeCommand()
         {
-            // ToDo: ESCキートグル処理
+            // ESCキートグル処理
+            if (SelectedButtonIndex >= 0 && SelectedButtonIndex < _currentMenu.MenuItems.Count)
+            {
+                // ESCキー設定を切り替え
+                if (_currentMenu.CancelButtonIndex == SelectedButtonIndex)
+                {
+                    _currentMenu.CancelButtonIndex = -1;
+                    IsCurrentItemEscapeButton = false;
+                }
+                else
+                {
+                    _currentMenu.CancelButtonIndex = SelectedButtonIndex;
+                    IsCurrentItemEscapeButton = true;
+                }
+                
+                // UIを更新
+                UpdateUI();
+            }
         }
 
         /// <summary>

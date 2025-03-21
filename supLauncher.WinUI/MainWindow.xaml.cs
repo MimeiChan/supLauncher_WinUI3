@@ -1,6 +1,7 @@
 using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
+using Microsoft.UI.Xaml.Controls.Primitives; // FlyoutShowOptions用
 using Microsoft.Extensions.DependencyInjection;
 using supLauncher.Core.Models;
 using supLauncher.WinUI.ViewModels;
@@ -56,7 +57,13 @@ namespace supLauncher.WinUI
         /// </summary>
         private void EditModeItem_Click(object sender, RoutedEventArgs e)
         {
-            ExecuteModeItem.IsChecked = !EditModeItem.IsChecked;
+            // 参照をxamlファイルから取得
+            var editModeItem = sender as ToggleMenuFlyoutItem;
+            var executeModeItem = this.FindName("ExecuteModeItem") as ToggleMenuFlyoutItem;
+            if (executeModeItem != null)
+            {
+                executeModeItem.IsChecked = !editModeItem.IsChecked;
+            }
         }
 
         /// <summary>
@@ -64,7 +71,13 @@ namespace supLauncher.WinUI
         /// </summary>
         private void ExecuteModeItem_Click(object sender, RoutedEventArgs e)
         {
-            EditModeItem.IsChecked = !ExecuteModeItem.IsChecked;
+            // 参照をxamlファイルから取得
+            var executeModeItem = sender as ToggleMenuFlyoutItem;
+            var editModeItem = this.FindName("EditModeItem") as ToggleMenuFlyoutItem;
+            if (editModeItem != null)
+            {
+                editModeItem.IsChecked = !executeModeItem.IsChecked;
+            }
         }
 
         /// <summary>
@@ -278,8 +291,13 @@ namespace supLauncher.WinUI
             // 右クリックメニューを表示する処理
             if (sender is FrameworkElement element && element.Tag is int index)
             {
-                // 対象のボタンを選択
-                MenuButtonsGrid.SelectedIndex = index;
+                // GridView参照を取得
+                var menuButtonsGrid = this.FindName("MenuButtonsGrid") as GridView;
+                if (menuButtonsGrid != null)
+                {
+                    // 対象のボタンを選択
+                    menuButtonsGrid.SelectedIndex = index;
+                }
 
                 // 右クリックメニューを表示
                 if (!ViewModel.IsEditMode)
@@ -323,6 +341,7 @@ namespace supLauncher.WinUI
                 toggleEscapeItem.Click += (s, args) => ViewModel.ToggleEscapeCommand.Execute(null);
                 flyout.Items.Add(toggleEscapeItem);
                 
+                // FlyoutShowOptionsを使用する際にPrimitives名前空間が必要
                 flyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             }
         }

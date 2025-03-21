@@ -12,6 +12,7 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using supLauncher.Core.Models;
 using supLauncher.Core.Services;
+using Windows.UI.Text; // FontStyle、FontWeightをWindows.UI.Textから参照
 
 namespace supLauncher.WinUI.ViewModels
 {
@@ -366,8 +367,8 @@ namespace supLauncher.WinUI.ViewModels
                             _currentMenu.TextColor.B)),
                     FontFamily = new FontFamily(_currentMenu.FontName),
                     FontSize = _currentMenu.FontSize,
-                    FontWeight = _currentMenu.FontBold ? Microsoft.UI.Text.FontWeights.Bold : Microsoft.UI.Text.FontWeights.Normal,
-                    FontStyle = _currentMenu.FontItalic ? Microsoft.UI.Text.FontStyle.Italic : Microsoft.UI.Text.FontStyle.Normal,
+                    FontWeight = _currentMenu.FontBold ? FontWeights.Bold : FontWeights.Normal,
+                    FontStyle = _currentMenu.FontItalic ? FontStyle.Italic : FontStyle.Normal,
                     Visibility = visibility
                 });
             }
@@ -793,7 +794,7 @@ namespace supLauncher.WinUI.ViewModels
     /// <summary>
     /// メニューボタンのビューモデル
     /// </summary>
-    public class MenuButtonViewModel : ObservableObject
+    public partial class MenuButtonViewModel : ObservableObject
     {
         /// <summary>インデックス</summary>
         [ObservableProperty]
@@ -833,11 +834,11 @@ namespace supLauncher.WinUI.ViewModels
 
         /// <summary>フォントウェイト</summary>
         [ObservableProperty]
-        private Microsoft.UI.Text.FontWeight _fontWeight;
+        private FontWeight _fontWeight;
 
         /// <summary>フォントスタイル</summary>
         [ObservableProperty]
-        private Microsoft.UI.Text.FontStyle _fontStyle;
+        private FontStyle _fontStyle;
 
         /// <summary>表示状態</summary>
         [ObservableProperty]

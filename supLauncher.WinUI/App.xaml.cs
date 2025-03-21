@@ -22,7 +22,11 @@ namespace supLauncher.WinUI
         /// <summary>
         /// メインウィンドウへの参照
         /// </summary>
-        public Window MainWindow { get; set; }
+        public MainWindow MainWindow 
+        {
+            get => m_window as MainWindow;
+            set => m_window = value;
+        }
 
         /// <summary>
         /// コンストラクタ
@@ -43,8 +47,8 @@ namespace supLauncher.WinUI
         /// <param name="args">起動引数</param>
         protected override void OnLaunched(Microsoft.UI.Xaml.LaunchActivatedEventArgs args)
         {
-            MainWindow = new MainWindow();
-            MainWindow.Activate();
+            m_window = new MainWindow();
+            m_window.Activate();
         }
 
         /// <summary>
@@ -62,9 +66,12 @@ namespace supLauncher.WinUI
 
             // ViewModel登録
             services.AddTransient<MainWindowViewModel>();
-            services.AddTransient<ButtonEditViewModel>();
-            services.AddTransient<SettingsViewModel>();
         }
+
+        /// <summary>
+        /// メインウィンドウの参照
+        /// </summary>
+        private Window m_window;
 
         /// <summary>
         /// 現在のアプリケーションインスタンスを取得する

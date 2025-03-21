@@ -25,6 +25,11 @@ namespace supLauncher.WinUI
         /// </summary>
         public MainWindowViewModel ViewModel { get; }
 
+        // UIコントロールの参照（代替策として直接保持）
+        private ToggleMenuFlyoutItem _editModeItem;
+        private ToggleMenuFlyoutItem _executeModeItem;
+        private GridView _menuButtonsGrid;
+
         /// <summary>
         /// コンストラクタ
         /// </summary>
@@ -46,6 +51,17 @@ namespace supLauncher.WinUI
             {
                 app.MainWindow = this;
             }
+
+            // UIコントロールへの参照を取得（XAMLが正しく初期化された後）
+            Loaded += MainWindow_Loaded;
+        }
+
+        private void MainWindow_Loaded(object sender, RoutedEventArgs e)
+        {
+            // UIコントロールの参照を取得
+            _editModeItem = Content.XamlRoot.Host.Content.FindName("EditModeItem") as ToggleMenuFlyoutItem;
+            _executeModeItem = Content.XamlRoot.Host.Content.FindName("ExecuteModeItem") as ToggleMenuFlyoutItem;
+            _menuButtonsGrid = Content.XamlRoot.Host.Content.FindName("MenuButtonsGrid") as GridView;
         }
 
         private IntPtr _windowHandle;
@@ -57,12 +73,11 @@ namespace supLauncher.WinUI
         /// </summary>
         private void EditModeItem_Click(object sender, RoutedEventArgs e)
         {
-            // 参照をxamlファイルから取得
+            // 送信元のコントロールを使用
             var editModeItem = sender as ToggleMenuFlyoutItem;
-            var executeModeItem = this.FindName("ExecuteModeItem") as ToggleMenuFlyoutItem;
-            if (executeModeItem != null)
+            if (_executeModeItem != null)
             {
-                executeModeItem.IsChecked = !editModeItem.IsChecked;
+                _executeModeItem.IsChecked = !editModeItem.IsChecked;
             }
         }
 
@@ -71,12 +86,11 @@ namespace supLauncher.WinUI
         /// </summary>
         private void ExecuteModeItem_Click(object sender, RoutedEventArgs e)
         {
-            // 参照をxamlファイルから取得
+            // 送信元のコントロールを使用
             var executeModeItem = sender as ToggleMenuFlyoutItem;
-            var editModeItem = this.FindName("EditModeItem") as ToggleMenuFlyoutItem;
-            if (editModeItem != null)
+            if (_editModeItem != null)
             {
-                editModeItem.IsChecked = !executeModeItem.IsChecked;
+                _editModeItem.IsChecked = !executeModeItem.IsChecked;
             }
         }
 
@@ -291,12 +305,10 @@ namespace supLauncher.WinUI
             // 右クリックメニューを表示する処理
             if (sender is FrameworkElement element && element.Tag is int index)
             {
-                // GridView参照を取得
-                var menuButtonsGrid = this.FindName("MenuButtonsGrid") as GridView;
-                if (menuButtonsGrid != null)
+                // 対象のボタンを選択
+                if (_menuButtonsGrid != null)
                 {
-                    // 対象のボタンを選択
-                    menuButtonsGrid.SelectedIndex = index;
+                    _menuButtonsGrid.SelectedIndex = index;
                 }
 
                 // 右クリックメニューを表示

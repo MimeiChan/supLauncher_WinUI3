@@ -12,7 +12,8 @@ using CommunityToolkit.Mvvm.ComponentModel;
 using CommunityToolkit.Mvvm.Input;
 using supLauncher.Core.Models;
 using supLauncher.Core.Services;
-using Windows.UI.Text; // FontStyle、FontWeightをWindows.UI.Textから参照
+// FontStyle、FontWeightを正しく参照
+using Windows.UI.Text;
 
 namespace supLauncher.WinUI.ViewModels
 {

@@ -2,8 +2,11 @@ using Microsoft.UI.Xaml;
 using Microsoft.UI.Xaml.Controls;
 using Microsoft.UI.Xaml.Input;
 using Microsoft.Extensions.DependencyInjection;
+using supLauncher.Core.Models;
 using supLauncher.WinUI.ViewModels;
+using supLauncher.WinUI.Views;
 using System;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.DataTransfer;
 using Windows.Foundation;
 using Windows.Storage.Pickers;
@@ -36,6 +39,12 @@ namespace supLauncher.WinUI
             
             // ウィンドウハンドルを保存
             _windowHandle = WindowNative.GetWindowHandle(this);
+            
+            // ウィンドウ参照をAppに保存
+            if (App.Current is App app)
+            {
+                app.MainWindow = this;
+            }
         }
 
         private IntPtr _windowHandle;
@@ -112,10 +121,29 @@ namespace supLauncher.WinUI
         /// <summary>
         /// 環境設定メニュー項目がクリックされた
         /// </summary>
-        private void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
+        private async void SettingsMenuItem_Click(object sender, RoutedEventArgs e)
         {
             // 環境設定ダイアログを表示
-            ViewModel.SettingsCommand.Execute(null);
+            var settingsDialog = new SettingsDialog();
+            await ShowSettingsDialogAsync(settingsDialog);
+        }
+
+        /// <summary>
+        /// 環境設定ダイアログを表示する
+        /// </summary>
+        private async Task ShowSettingsDialogAsync(SettingsDialog settingsDialog)
+        {
+            // ダイアログを表示
+            var result = await settingsDialog.ShowAsync(
+                ViewModel.CurrentMenu, 
+                _windowHandle, 
+                this.Content.XamlRoot);
+            
+            if (result == ContentDialogResult.Primary && !settingsDialog.IsCancelled)
+            {
+                // 設定が更新された場合
+                ViewModel.UpdateMenuSettings(settingsDialog.Result);
+            }
         }
 
         /// <summary>
@@ -207,11 +235,38 @@ namespace supLauncher.WinUI
         /// <summary>
         /// メニューボタンがクリックされた
         /// </summary>
-        private void MenuButtonsGrid_ItemClick(object sender, ItemClickEventArgs e)
+        private async void MenuButtonsGrid_ItemClick(object sender, ItemClickEventArgs e)
         {
             if (e.ClickedItem is MenuButtonViewModel button)
             {
-                ViewModel.ButtonClickCommand.Execute(button.Index);
+                if (ViewModel.IsEditMode)
+                {
+                    // 編集モードの場合はダイアログを表示
+                    await ShowButtonEditDialogAsync(button.Index);
+                }
+                else
+                {
+                    // 実行モードの場合はボタンコマンドを実行
+                    ViewModel.ButtonClickCommand.Execute(button.Index);
+                }
+            }
+        }
+
+        /// <summary>
+        /// ボタン編集ダイアログを表示する
+        /// </summary>
+        private async Task ShowButtonEditDialogAsync(int buttonIndex)
+        {
+            var editDialog = new ButtonEditDialog();
+            var menuItem = ViewModel.GetMenuItem(buttonIndex);
+            bool isEscapeButton = ViewModel.IsEscapeButton(buttonIndex);
+            
+            var result = await editDialog.ShowAsync(menuItem, isEscapeButton, this.Content.XamlRoot);
+            
+            if (result == ContentDialogResult.Primary && !editDialog.IsCancelled)
+            {
+                // 編集が完了した場合
+                ViewModel.UpdateMenuItem(buttonIndex, editDialog.Result, editDialog.ViewModel.IsEscapeButton);
             }
         }
 
@@ -233,7 +288,42 @@ namespace supLauncher.WinUI
                     return;
                 }
 
-                // ToDo: コンテキストメニューを表示
+                // 編集メニューを表示
+                ViewModel.SelectedButtonIndex = index;
+                
+                // コンテキストメニューを表示
+                var flyout = new MenuFlyout();
+                
+                var cutItem = new MenuFlyoutItem { Text = "切り取り" };
+                cutItem.Click += (s, args) => ViewModel.CutCommand.Execute(null);
+                flyout.Items.Add(cutItem);
+                
+                var copyItem = new MenuFlyoutItem { Text = "コピー" };
+                copyItem.Click += (s, args) => ViewModel.CopyCommand.Execute(null);
+                flyout.Items.Add(copyItem);
+                
+                var pasteItem = new MenuFlyoutItem { Text = "貼り付け" };
+                pasteItem.Click += (s, args) => ViewModel.PasteCommand.Execute(null);
+                pasteItem.IsEnabled = ViewModel.CanPaste;
+                flyout.Items.Add(pasteItem);
+                
+                flyout.Items.Add(new MenuFlyoutSeparator());
+                
+                var deleteItem = new MenuFlyoutItem { Text = "削除" };
+                deleteItem.Click += (s, args) => ViewModel.DeleteCommand.Execute(null);
+                flyout.Items.Add(deleteItem);
+                
+                flyout.Items.Add(new MenuFlyoutSeparator());
+                
+                var toggleHiddenItem = new ToggleMenuFlyoutItem { Text = "非表示", IsChecked = ViewModel.IsCurrentItemHidden };
+                toggleHiddenItem.Click += (s, args) => ViewModel.ToggleHiddenCommand.Execute(null);
+                flyout.Items.Add(toggleHiddenItem);
+                
+                var toggleEscapeItem = new ToggleMenuFlyoutItem { Text = "ESCキー", IsChecked = ViewModel.IsCurrentItemEscapeButton };
+                toggleEscapeItem.Click += (s, args) => ViewModel.ToggleEscapeCommand.Execute(null);
+                flyout.Items.Add(toggleEscapeItem);
+                
+                flyout.ShowAt(element, new FlyoutShowOptions { Position = e.GetPosition(element) });
             }
         }
 

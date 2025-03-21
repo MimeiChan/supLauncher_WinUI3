@@ -13,6 +13,8 @@
     <EnableMsixTooling>true</EnableMsixTooling>
     <WindowsPackageType>None</WindowsPackageType>
     <WindowsAppSDKSelfContained>true</WindowsAppSDKSelfContained>
+    <!-- EnableDefaultPageItemsをfalseにして重複を避ける -->
+    <EnableDefaultPageItems>false</EnableDefaultPageItems>
   </PropertyGroup>
 
   <ItemGroup>
@@ -49,8 +51,11 @@
     </None>
   </ItemGroup>
 
-  <!-- XAML要素がPage設定になっていることを確認 -->
+  <!-- XAMLファイルを明示的に指定 -->
   <ItemGroup>
-    <Page Include="**\*.xaml" />
+    <Page Include="MainWindow.xaml" />
+    <Page Include="Views\ButtonEditDialog.xaml" />
+    <Page Include="Views\SettingsDialog.xaml" />
+    <ApplicationDefinition Include="App.xaml" />
   </ItemGroup>
 </Project>

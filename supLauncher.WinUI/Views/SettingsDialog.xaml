@@ -1,0 +1,188 @@
+<Page
+    x:Class="supLauncher.WinUI.Views.SettingsDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:supLauncher.WinUI.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="環境設定">
+
+    <Grid Padding="16">
+        <Pivot>
+            <!-- 基本設定 -->
+            <PivotItem Header="基本設定">
+                <ScrollViewer>
+                    <StackPanel Spacing="16">
+                        <!-- タイトル -->
+                        <StackPanel>
+                            <TextBlock Text="メニュータイトル" Margin="0,0,0,4"/>
+                            <TextBox Text="{x:Bind ViewModel.Title, Mode=TwoWay}"/>
+                        </StackPanel>
+                        
+                        <!-- レイアウト -->
+                        <StackPanel>
+                            <TextBlock Text="レイアウト" Margin="0,0,0,4"/>
+                            <Grid ColumnSpacing="16" RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="行数:" VerticalAlignment="Center"/>
+                                <NumberBox Grid.Row="0" Grid.Column="1" Value="{x:Bind ViewModel.Rows, Mode=TwoWay}" Minimum="1" Maximum="20"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="列数:" VerticalAlignment="Center"/>
+                                <NumberBox Grid.Row="1" Grid.Column="1" Value="{x:Bind ViewModel.Columns, Mode=TwoWay}" Minimum="1" Maximum="10"/>
+                            </Grid>
+                        </StackPanel>
+                        
+                        <!-- サイズ -->
+                        <StackPanel>
+                            <TextBlock Text="ウィンドウサイズ" Margin="0,0,0,4"/>
+                            <Grid ColumnSpacing="16" RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="幅:" VerticalAlignment="Center"/>
+                                <NumberBox Grid.Row="0" Grid.Column="1" Value="{x:Bind ViewModel.Width, Mode=TwoWay}" Minimum="300" Maximum="2000"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="高さ:" VerticalAlignment="Center"/>
+                                <NumberBox Grid.Row="1" Grid.Column="1" Value="{x:Bind ViewModel.Height, Mode=TwoWay}" Minimum="200" Maximum="1500"/>
+                            </Grid>
+                        </StackPanel>
+                        
+                        <!-- 表示設定 -->
+                        <StackPanel>
+                            <TextBlock Text="表示設定" Margin="0,0,0,4"/>
+                            <CheckBox Content="メニューバーを表示" IsChecked="{x:Bind ViewModel.MenuVisible, Mode=TwoWay}"/>
+                            <CheckBox Content="ステータスバーを表示" IsChecked="{x:Bind ViewModel.StatusBarVisible, Mode=TwoWay}"/>
+                        </StackPanel>
+                        
+                        <!-- 表示位置 -->
+                        <StackPanel>
+                            <TextBlock Text="メニュー表示位置" Margin="0,0,0,4"/>
+                            <RadioButtons>
+                                <RadioButton Content="ルートメニューと同じ位置" IsChecked="{x:Bind ViewModel.IsRootMenuPosition, Mode=TwoWay}"/>
+                                <RadioButton Content="現在のメニューの位置" IsChecked="{x:Bind ViewModel.IsCurrentMenuPosition, Mode=TwoWay}"/>
+                                <RadioButton Content="画面中央" IsChecked="{x:Bind ViewModel.IsScreenCenterPosition, Mode=TwoWay}"/>
+                            </RadioButtons>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+            
+            <!-- 表示設定 -->
+            <PivotItem Header="表示設定">
+                <ScrollViewer>
+                    <StackPanel Spacing="16">
+                        <!-- フォント設定 -->
+                        <StackPanel>
+                            <TextBlock Text="フォント設定" Margin="0,0,0,4"/>
+                            <Grid ColumnSpacing="16" RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="フォント:" VerticalAlignment="Center"/>
+                                <ComboBox Grid.Row="0" Grid.Column="1" SelectedItem="{x:Bind ViewModel.FontName, Mode=TwoWay}" ItemsSource="{x:Bind ViewModel.AvailableFonts}"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="サイズ:" VerticalAlignment="Center"/>
+                                <NumberBox Grid.Row="1" Grid.Column="1" Value="{x:Bind ViewModel.FontSize, Mode=TwoWay}" Minimum="6" Maximum="72"/>
+                            </Grid>
+                            
+                            <StackPanel Orientation="Horizontal" Spacing="16" Margin="0,8,0,0">
+                                <CheckBox Content="太字" IsChecked="{x:Bind ViewModel.FontBold, Mode=TwoWay}"/>
+                                <CheckBox Content="斜体" IsChecked="{x:Bind ViewModel.FontItalic, Mode=TwoWay}"/>
+                                <CheckBox Content="下線" IsChecked="{x:Bind ViewModel.FontUnderline, Mode=TwoWay}"/>
+                            </StackPanel>
+                        </StackPanel>
+                        
+                        <!-- 色設定 -->
+                        <StackPanel>
+                            <TextBlock Text="色設定" Margin="0,0,0,4"/>
+                            <Grid ColumnSpacing="16" RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBlock Grid.Row="0" Grid.Column="0" Text="背景色:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="0" Grid.Column="1" Text="{x:Bind ViewModel.BackColorText, Mode=TwoWay}" IsReadOnly="True"/>
+                                <Button Grid.Row="0" Grid.Column="2" Content="選択..." Click="BackColorButton_Click"/>
+                                
+                                <TextBlock Grid.Row="1" Grid.Column="0" Text="ボタン色:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="1" Grid.Column="1" Text="{x:Bind ViewModel.ButtonColorText, Mode=TwoWay}" IsReadOnly="True"/>
+                                <Button Grid.Row="1" Grid.Column="2" Content="選択..." Click="ButtonColorButton_Click"/>
+                                
+                                <TextBlock Grid.Row="2" Grid.Column="0" Text="文字色:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.TextColorText, Mode=TwoWay}" IsReadOnly="True"/>
+                                <Button Grid.Row="2" Grid.Column="2" Content="選択..." Click="TextColorButton_Click"/>
+                                
+                                <TextBlock Grid.Row="3" Grid.Column="0" Text="選択文字色:" VerticalAlignment="Center"/>
+                                <TextBox Grid.Row="3" Grid.Column="1" Text="{x:Bind ViewModel.HighlightTextColorText, Mode=TwoWay}" IsReadOnly="True"/>
+                                <Button Grid.Row="3" Grid.Column="2" Content="選択..." Click="HighlightTextColorButton_Click"/>
+                            </Grid>
+                        </StackPanel>
+                        
+                        <!-- 背景画像 -->
+                        <StackPanel>
+                            <TextBlock Text="背景画像" Margin="0,0,0,4"/>
+                            <Grid ColumnSpacing="16" RowSpacing="8">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition Width="*"/>
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition Height="Auto"/>
+                                </Grid.RowDefinitions>
+                                
+                                <TextBox Grid.Row="0" Grid.Column="0" Text="{x:Bind ViewModel.BackgroundImageFile, Mode=TwoWay}"/>
+                                <Button Grid.Row="0" Grid.Column="1" Content="参照..." Click="BrowseBackgroundButton_Click"/>
+                                
+                                <CheckBox Grid.Row="1" Grid.Column="0" Content="タイル表示" IsChecked="{x:Bind ViewModel.BackgroundImageTile, Mode=TwoWay}"/>
+                                <Button Grid.Row="1" Grid.Column="1" Content="クリア" Click="ClearBackgroundButton_Click"/>
+                            </Grid>
+                        </StackPanel>
+                    </StackPanel>
+                </ScrollViewer>
+            </PivotItem>
+            
+            <!-- セキュリティ -->
+            <PivotItem Header="セキュリティ">
+                <StackPanel Spacing="16">
+                    <!-- パスワード設定 -->
+                    <StackPanel>
+                        <TextBlock Text="パスワード設定" Margin="0,0,0,4"/>
+                        <PasswordBox Password="{x:Bind ViewModel.Password, Mode=TwoWay}" PlaceholderText="パスワードを入力"/>
+                        <PasswordBox Password="{x:Bind ViewModel.PasswordConfirm, Mode=TwoWay}" PlaceholderText="パスワードの確認" Margin="0,8,0,0"/>
+                        <TextBlock Text="{x:Bind ViewModel.PasswordError, Mode=OneWay}" Foreground="Red" Margin="0,8,0,0"/>
+                    </StackPanel>
+                </StackPanel>
+            </PivotItem>
+        </Pivot>
+    </Grid>
+</Page>

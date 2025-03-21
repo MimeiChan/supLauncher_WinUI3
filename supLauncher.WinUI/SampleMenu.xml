@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="utf-8"?>
+<HiMenu version="3.0.0.0">
+  <EnvironmentTitle>
+    <Title>サンプルメニュー</Title>
+    <Items>
+      <Item index="1">
+        <Title>メモ帳を起動</Title>
+        <Comment>Windows標準のメモ帳アプリケーションを起動します</Comment>
+        <Command>notepad.exe</Command>
+        <Flag>---</Flag>
+      </Item>
+      <Item index="2">
+        <Title>電卓を起動</Title>
+        <Comment>Windows標準の電卓アプリケーションを起動します</Comment>
+        <Command>calc.exe</Command>
+        <Flag>---</Flag>
+      </Item>
+      <Item index="3">
+        <Title>コントロールパネル</Title>
+        <Comment>コントロールパネルを開きます</Comment>
+        <Command>control.exe</Command>
+        <Flag>---</Flag>
+      </Item>
+      <Item index="4">
+        <Title>コマンドプロンプト</Title>
+        <Comment>コマンドプロンプトを開きます</Comment>
+        <Command>cmd.exe</Command>
+        <Flag>---</Flag>
+      </Item>
+      <Item index="5">
+        <Title>エクスプローラー</Title>
+        <Comment>エクスプローラーを開きます</Comment>
+        <Command>explorer.exe</Command>
+        <Flag>---</Flag>
+      </Item>
+      <Item index="20">
+        <Title>終了</Title>
+        <Comment>アプリケーションを終了します</Comment>
+        <Command></Command>
+        <Flag>-*-</Flag>
+      </Item>
+    </Items>
+  </EnvironmentTitle>
+  <ExecuteEnvironment>
+    <Rows>10</Rows>
+    <Cols>2</Cols>
+    <Width>559</Width>
+    <Height>406</Height>
+    <FontName>ＭＳ Ｐゴシック</FontName>
+    <FontSize>12</FontSize>
+    <FontBold>True</FontBold>
+    <FontItalic>False</FontItalic>
+    <FontUnderline>False</FontUnderline>
+    <DispPosition>3</DispPosition>
+    <BGFile></BGFile>
+    <BGTile>False</BGTile>
+    <MenuVisible>True</MenuVisible>
+    <StatusBarVisible>True</StatusBarVisible>
+    <BackColor>-2830136</BackColor>
+    <ButtonColor>-2830136</ButtonColor>
+    <TextColor>-16777216</TextColor>
+    <HighLightTextColor>-16776961</HighLightTextColor>
+    <CancelButton>19</CancelButton>
+  </ExecuteEnvironment>
+  <Current>
+    <CurrentX>100</CurrentX>
+    <CurrentY>100</CurrentY>
+  </Current>
+</HiMenu>

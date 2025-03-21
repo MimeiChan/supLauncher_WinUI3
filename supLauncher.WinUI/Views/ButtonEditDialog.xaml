@@ -1,0 +1,72 @@
+<Page
+    x:Class="supLauncher.WinUI.Views.ButtonEditDialog"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:supLauncher.WinUI.Views"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d"
+    Title="メニュー項目の編集">
+
+    <Grid Padding="16">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="Auto"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="Auto"/>
+        </Grid.ColumnDefinitions>
+
+        <!-- タイトル -->
+        <TextBlock Grid.Row="0" Grid.Column="0" Text="タイトル:" VerticalAlignment="Center" Margin="0,0,8,12"/>
+        <TextBox Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Text="{x:Bind ViewModel.Title, Mode=TwoWay}" Margin="0,0,0,12"/>
+
+        <!-- コメント -->
+        <TextBlock Grid.Row="1" Grid.Column="0" Text="コメント:" VerticalAlignment="Center" Margin="0,0,8,12"/>
+        <TextBox Grid.Row="1" Grid.Column="1" Grid.ColumnSpan="2" Text="{x:Bind ViewModel.Comment, Mode=TwoWay}" Margin="0,0,0,12"/>
+
+        <!-- コマンド -->
+        <TextBlock Grid.Row="2" Grid.Column="0" Text="コマンド:" VerticalAlignment="Center" Margin="0,0,8,12"/>
+        <TextBox Grid.Row="2" Grid.Column="1" Text="{x:Bind ViewModel.Command, Mode=TwoWay}" Margin="0,0,0,12"/>
+        <Button Grid.Row="2" Grid.Column="2" Content="参照..." Click="BrowseButton_Click" Margin="8,0,0,12"/>
+
+        <!-- 実行方法 -->
+        <TextBlock Grid.Row="3" Grid.Column="0" Text="実行方法:" VerticalAlignment="Center" Margin="0,0,8,12"/>
+        <StackPanel Grid.Row="3" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,12">
+            <RadioButton Content="アプリケーション実行" IsChecked="{x:Bind ViewModel.IsExecApplication, Mode=TwoWay}" GroupName="ExecType" Margin="0,0,16,0"/>
+            <RadioButton Content="次のメニューを開く" IsChecked="{x:Bind ViewModel.IsOpenNextMenu, Mode=TwoWay}" GroupName="ExecType" Margin="0,0,16,0"/>
+            <RadioButton Content="前のメニューに戻る" IsChecked="{x:Bind ViewModel.IsBackPrevMenu, Mode=TwoWay}" GroupName="ExecType"/>
+        </StackPanel>
+
+        <!-- 実行後 -->
+        <TextBlock Grid.Row="4" Grid.Column="0" Text="実行後:" VerticalAlignment="Center" Margin="0,0,8,12"/>
+        <StackPanel Grid.Row="4" Grid.Column="1" Grid.ColumnSpan="2" Orientation="Horizontal" Margin="0,0,0,12">
+            <RadioButton Content="ランチャーを継続" IsChecked="{x:Bind ViewModel.IsContinueHiMenu, Mode=TwoWay}" GroupName="After" Margin="0,0,16,0"/>
+            <RadioButton Content="ランチャーを終了" IsChecked="{x:Bind ViewModel.IsEndHiMenu, Mode=TwoWay}" GroupName="After" Margin="0,0,16,0"/>
+            <RadioButton Content="ランチャーを最小化" IsChecked="{x:Bind ViewModel.IsMinimizedHiMenu, Mode=TwoWay}" GroupName="After"/>
+        </StackPanel>
+
+        <!-- 表示/非表示 -->
+        <TextBlock Grid.Row="5" Grid.Column="0" Text="表示:" VerticalAlignment="Center" Margin="0,0,8,12"/>
+        <CheckBox Grid.Row="5" Grid.Column="1" Content="非表示" IsChecked="{x:Bind ViewModel.IsHidden, Mode=TwoWay}" Margin="0,0,0,12"/>
+
+        <!-- ESCキー -->
+        <TextBlock Grid.Row="6" Grid.Column="0" Text="ESCキー:" VerticalAlignment="Center" Margin="0,0,8,12"/>
+        <CheckBox Grid.Row="6" Grid.Column="1" Content="ESCキーとして設定" IsChecked="{x:Bind ViewModel.IsEscapeButton, Mode=TwoWay}" Margin="0,0,0,12"/>
+
+        <!-- ボタン -->
+        <StackPanel Grid.Row="8" Grid.Column="0" Grid.ColumnSpan="3" Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,12,0,0">
+            <Button Content="OK" Click="OkButton_Click" Style="{StaticResource AccentButtonStyle}" Margin="0,0,8,0"/>
+            <Button Content="キャンセル" Click="CancelButton_Click"/>
+        </StackPanel>
+    </Grid>
+</Page>
